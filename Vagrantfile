@@ -13,8 +13,8 @@ Vagrant.configure("2") do |config|
     mainmachine.vm.provision "shell", privileged: false, inline: <<-SHELL
       cd ~
       mkdir myDirTestTestTest
-      apt-get update -y && apt-get upgrade
-      apt install zsh -y
+      sudo apt-get update -y && apt-get upgrade
+      sudo apt install zsh -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
       sudo chsh -s /bin/zsh vagrant
       zsh
