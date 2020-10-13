@@ -11,8 +11,6 @@ Vagrant.configure("2") do |config|
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
     mainmachine.vm.provision "shell", privileged: false, inline: <<-SHELL
-      cd ~
-      mkdir myDirTestTestTest
       sudo apt update -y && sudo apt upgrade -y
       # install git
       sudo apt install zsh git software-properties-common -y
