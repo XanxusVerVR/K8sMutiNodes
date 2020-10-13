@@ -35,11 +35,10 @@ Vagrant.configure("2") do |config|
       python get-pip.py
       sudo echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.zshrc
       # export PATH=$PATH:$HOME/.local/bin
+
       # install pip3
       sudo apt-get install python3-pip -y
 
-      # Deploy Kubespray with Ansible Playbook
-      # sudo pip3 install -r requirements.txt
     SHELL
   end
 
@@ -47,18 +46,54 @@ Vagrant.configure("2") do |config|
     master1.vm.box = "centos/7"
     master1.vm.hostname = 'k8s-master1'
     master1.vm.define vm_name = 'master1'
+
+    master1.ssh.username = 'root'
+    master1.ssh.password = '123'
+    master1.ssh.insert_key = 'true'
+    master1.ssh.port = 2220
+
     master1.vm.network :private_network, ip: "10.1.7.152"
     master1.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
       v.customize ["modifyvm", :id, "--memory", 2048]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
+  end
 
-    # master1.vm.provision "shell", privileged: false, inline: <<-SHELL
-    #   sudo yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim
-    #   sudo setenforce 0
-    #   sudo sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
-    # SHELL
+  config.vm.define "master2" do |master2|
+    master2.vm.box = "centos/7"
+    master2.vm.hostname = 'k8s-master2'
+    master2.vm.define vm_name = 'master2'
+
+    master2.ssh.username = 'root'
+    master2.ssh.password = '123'
+    master2.ssh.insert_key = 'true'
+    master2.ssh.port = 2221
+
+    master2.vm.network :private_network, ip: "10.1.7.60"
+    master2.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
+    end
+  end
+
+  config.vm.define "master3" do |master3|
+    master3.vm.box = "centos/7"
+    master3.vm.hostname = 'k8s-master3'
+    master3.vm.define vm_name = 'master3'
+
+    master3.ssh.username = 'root'
+    master3.ssh.password = '123'
+    master3.ssh.insert_key = 'true'
+    master3.ssh.port = 2222
+
+    master3.vm.network :private_network, ip: "10.1.7.158"
+    master3.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
+    end
   end
 
 end
