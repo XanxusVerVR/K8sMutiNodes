@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     mainmachine.vm.provision "shell", privileged: false, inline: <<-SHELL
       cd ~
       mkdir myDirTestTestTest
-      sudo apt update -y && apt upgrade -y
+      sudo apt update -y && sudo apt upgrade -y
       # install git
       sudo apt install zsh git software-properties-common -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
@@ -35,7 +35,8 @@ Vagrant.configure("2") do |config|
       # install pip
       curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
       python get-pip.py
-      export PATH=$PATH:$HOME/.local/bin
+      sudo echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.zshrc
+      # export PATH=$PATH:$HOME/.local/bin
       # install pip3
       sudo apt-get install python3-pip -y
 
@@ -54,6 +55,12 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", 2048]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
+
+    # master1.vm.provision "shell", privileged: false, inline: <<-SHELL
+    #   sudo yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim
+    #   sudo setenforce 0
+    #   sudo sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+    # SHELL
   end
 
 end
