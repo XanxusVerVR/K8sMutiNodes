@@ -12,7 +12,13 @@ apt-get install sshpass
 如遇到以下錯誤
 fatal: [node1]: FAILED! => {"msg": "The conditional check 'kube_service_addresses | ipaddr('net')' failed. The error was: The ipaddr filter requires python's netaddr be installed on the ansible controller"}
 cd ~kubespray
+pip install netaddr
 pip install -r requirements.txt
+
+卡在以下地方
+TASK [container-engine/docker : Configure docker repository on RedHat/CentOS/Oracle Linux] *****************************changed: [test1] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.81-258561677559415/source", "state": "file", "uid": 0}
+changed: [test3] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.86-247370856306725/source", "state": "file", "uid": 0}
+changed: [test2] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.85-113164698282807/source", "state": "file", "uid": 0}
 
 curl -k https://10.1.7.152:30864/
 
@@ -262,7 +268,7 @@ sed -i '/\[etcd\]/a node1' inv2.ini
 
 git clone https://github.com/kubernetes-sigs/kubespray.git -b release-2.14
 
-ssh-keygen -t rsa -b 4096 -C "your_email3@example.com"
+ssh-keygen -t rsa -b 4096 -C "your_email5@example.com"
 
 sudo passwd root
 
@@ -276,7 +282,3 @@ declare -a IPS=(10.1.7.152 10.1.7.60 10.1.7.158)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 編輯~/kubespray/inventory/mycluster/inventory.ini
 ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
-
-TASK [container-engine/docker : Configure docker repository on RedHat/CentOS/Oracle Linux] *****************************changed: [test1] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.81-258561677559415/source", "state": "file", "uid": 0}
-changed: [test3] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.86-247370856306725/source", "state": "file", "uid": 0}
-changed: [test2] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.85-113164698282807/source", "state": "file", "uid": 0}
