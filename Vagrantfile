@@ -10,9 +10,9 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", 2048]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
-    
+
     mainmachine.vm.provision "shell", privileged: false, inline: <<-SHELL
-      sudo apt update -y && sudo apt upgrade -y
+      sudo apt update -y
       # install git
       sudo apt install zsh git software-properties-common -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
