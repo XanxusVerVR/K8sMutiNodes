@@ -7,7 +7,13 @@ pip install ansible-modules-hashivault
 如遇到以下錯誤
 to use the 'ssh' connection type with passwords, you must install the sshpass program"
 在部屬機安裝sshpass
-apt-get install sshpass
+sudo apt-get install sshpass -y
+
+如遇到以下錯誤
+TASK [prep_kubeadm_images | Copy kubeadm binary from download dir to system path] ******************
+fatal: [test1 -> 10.1.7.152]: FAILED! => {"changed": false, "cmd": "sshpass", "msg": "[Errno 2] No such file or directory", "rc": 2}
+去master機安裝sshpass，在root執行以下指令
+yum -y install sshpass
 
 如遇到以下錯誤
 fatal: [node1]: FAILED! => {"msg": "The conditional check 'kube_service_addresses | ipaddr('net')' failed. The error was: The ipaddr filter requires python's netaddr be installed on the ansible controller"}
