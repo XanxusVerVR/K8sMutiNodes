@@ -54,47 +54,32 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", 2048]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
-
-    master1.vm.provision "shell", privileged: true, inline: <<-SHELL
-      yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim
-      setenforce 0
-      sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
-      swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
-      systemctl disable firewalld && systemctl stop firewalld
-      iptables -P FORWARD ACCEPT
-      modprobe br_netfilter
-      echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
-    SHELL
   end
 
-  # config.vm.define "master2" do |master2|
-  #   master2.vm.box = "centos/7"
-  #   master2.vm.hostname = 'k8s-master2'
-  #   master2.vm.define vm_name = 'master2'
+  config.vm.define "master2" do |master2|
+    master2.vm.box = "centos/7"
+    master2.vm.hostname = 'k8s-master2'
+    master2.vm.define vm_name = 'master2'
+    master2.vm.network :forwarded_port, guest: 22, host: 2221, id: 'ssh'
+    master2.vm.network :private_network, ip: "10.1.7.60"
+    master2.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
+    end
+  end
 
-  #   master2.vm.network :forwarded_port, guest: 22, host: 2221, id: 'ssh'
-
-  #   master2.vm.network :private_network, ip: "10.1.7.60"
-  #   master2.vm.provider :virtualbox do |v|
-  #     v.customize ["modifyvm", :id, "--cpus", 2]
-  #     v.customize ["modifyvm", :id, "--memory", 2048]
-  #     v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
-  #   end
-  # end
-
-  # config.vm.define "master3" do |master3|
-  #   master3.vm.box = "centos/7"
-  #   master3.vm.hostname = 'k8s-master3'
-  #   master3.vm.define vm_name = 'master3'
-
-  #   master3.vm.network :forwarded_port, guest: 22, host: 2222, id: 'ssh'
-
-  #   master3.vm.network :private_network, ip: "10.1.7.158"
-  #   master3.vm.provider :virtualbox do |v|
-  #     v.customize ["modifyvm", :id, "--cpus", 2]
-  #     v.customize ["modifyvm", :id, "--memory", 2048]
-  #     v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
-  #   end
-  # end
+  config.vm.define "master3" do |master3|
+    master3.vm.box = "centos/7"
+    master3.vm.hostname = 'k8s-master3'
+    master3.vm.define vm_name = 'master3'
+    master3.vm.network :forwarded_port, guest: 22, host: 2223, id: 'ssh'
+    master3.vm.network :private_network, ip: "10.1.7.158"
+    master3.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
+    end
+  end
 
 end

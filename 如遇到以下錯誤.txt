@@ -9,28 +9,185 @@ to use the 'ssh' connection type with passwords, you must install the sshpass pr
 在部屬機安裝sshpass
 apt-get install sshpass
 
+如遇到以下錯誤
+fatal: [node1]: FAILED! => {"msg": "The conditional check 'kube_service_addresses | ipaddr('net')' failed. The error was: The ipaddr filter requires python's netaddr be installed on the ansible controller"}
+cd ~kubespray
+pip install -r requirements.txt
 
 curl -k https://10.1.7.152:30864/
 
+如遇到以下錯誤
+fatal: [test1]: FAILED! => {"msg": "Timeout (12s) waiting for privilege escalation prompt: "}
+請檢查SSH相關的連線設定 如IP Port是否正確
 
 master機
+先切到root
+su
+密碼vagrant
+yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim
+setenforce 0
+sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
+systemctl disable firewalld && systemctl stop firewalld
+iptables -P FORWARD ACCEPT
+modprobe br_netfilter
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+
 etc/ssh/sshd_config
 PermitRootLogin yes
-Port 2200
-部屬機的public key放在master機的root .ssh底下
+Port 2220
+systemctl restart sshd.service
+部屬機的public key放在master機的root vagrant .ssh底下
 
+部屬機可用root SSH到master機的設定
+在master機不要創新的root密碼 用vagrant的即可
+/etc/ssh/sshd_config
+#       $OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
 
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
 
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+Port 2220
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+
+HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# Logging
+#SyslogFacility AUTH
+SyslogFacility AUTHPRIV
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+#PermitRootLogin yes
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile      .ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+#IgnoreUserKnownHosts no
+# Don't read the user's ~/.rhosts and ~/.shosts files
+#IgnoreRhosts yes
+
+# To disable tunneled clear text passwords, change to no here!
+#PasswordAuthentication yes
+#PermitEmptyPasswords no
+PasswordAuthentication no
+
+# Change to no to disable s/key passwords
+#ChallengeResponseAuthentication yes
+ChallengeResponseAuthentication no
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+#KerberosUseKuserok yes
+
+# GSSAPI options
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+#GSSAPIEnablek5users no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+# WARNING: 'UsePAM no' is not supported in Red Hat Enterprise Linux and may cause several
+# problems.
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding yes
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+#PrintMotd yes
+#PrintLastLog yes
+#TCPKeepAlive yes
+#UseLogin no
+#UsePrivilegeSeparation sandbox
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#ShowPatchLevel no
+#UseDNS yes
+UseDNS no
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+# override default of no subsystems
+Subsystem       sftp    /usr/libexec/openssh/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#       X11Forwarding no
+#       AllowTcpForwarding no
+#       PermitTTY no
+#       ForceCommand cvs server
+只有改port
 
 部屬機的/etc/ansible/hosts 裡面只有這樣
 [targets]
 10.1.7.152    ansible_connection=ssh    ansible_user=root
-
-
-
-
-
-
 
 
 
@@ -39,8 +196,14 @@ Port 2200
 # ## different ip than the default iface
 # ## We should set etcd_member_name for etcd cluster. The node that is not a etcd member do not need to set the value, or can set the empty string value.
 [all]
-test1 ansible_host=10.1.7.152 ansible_port=2200 nsible_ssh_user=root ansible_ssh_pass=123
+test1 ansible_host=10.1.7.152 ansible_port=2220 ansible_ssh_user=root ansible_ssh_pass=vagrant
 ip=10.1.7.152 etcd_member_name=etcd1
+
+test2 ansible_host=10.1.7.60 ansible_port=2221 ansible_ssh_user=root ansible_ssh_pass=vagrant
+ip=10.1.7.60 etcd_member_name=etcd2
+
+test3 ansible_host=10.1.7.158 ansible_port=2223 ansible_ssh_user=root ansible_ssh_pass=vagrant
+ip=10.1.7.158 etcd_member_name=etcd3
 # node1 ansible_host=95.54.0.12  # ip=10.3.0.1 etcd_member_name=etcd1
 # node2 ansible_host=95.54.0.13  # ip=10.3.0.2 etcd_member_name=etcd2
 # node3 ansible_host=95.54.0.14  # ip=10.3.0.3 etcd_member_name=etcd3
@@ -53,17 +216,23 @@ ip=10.1.7.152 etcd_member_name=etcd1
 
 [kube-master]
 test1
+test2
+test3
 # node1
 # node2
 
 [etcd]
 test1
+test2
+test3
 # node1
 # node2
 # node3
 
 [kube-node]
 test1
+test2
+test3
 # node2
 # node3
 # node4
@@ -75,3 +244,39 @@ test1
 [k8s-cluster:children]
 kube-master
 kube-node
+
+
+
+
+
+
+
+
+
+# 找到metrics_server_enabled: false 換成 metrics_server_enabled: true
+sed -i 's/metrics_server_enabled: false/metrics_server_enabled: true/g' file.txt
+
+# 找到某字串 在那個字串下面一行插入新的字串
+sed -i '/\[etcd\]/a node1' inv2.ini
+
+
+git clone https://github.com/kubernetes-sigs/kubespray.git -b release-2.14
+
+ssh-keygen -t rsa -b 4096 -C "your_email3@example.com"
+
+sudo passwd root
+
+部屬機步驟
+產生public key並放到master機
+cd ~/kubespray
+sudo pip3 install -r requirements.txt
+cp -rfp inventory/sample inventory/mycluster
+確定kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml中的dashboard_enabled與metrics_server_enabled為true
+declare -a IPS=(10.1.7.152 10.1.7.60 10.1.7.158)
+CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+編輯~/kubespray/inventory/mycluster/inventory.ini
+ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
+
+TASK [container-engine/docker : Configure docker repository on RedHat/CentOS/Oracle Linux] *****************************changed: [test1] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.81-258561677559415/source", "state": "file", "uid": 0}
+changed: [test3] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.86-247370856306725/source", "state": "file", "uid": 0}
+changed: [test2] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.85-113164698282807/source", "state": "file", "uid": 0}
