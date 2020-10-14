@@ -21,10 +21,18 @@ cd ~kubespray
 pip install netaddr
 pip install -r requirements.txt
 
+如遇到以下錯誤
+TASK [etcd : Configure | Wait for etcd cluster to be healthy] **************************************
+fatal: [test1]: FAILED! => {"attempts": 4, "changed": false, "cmd": "set -o pipefail && /usr/local/bin/etcdctl endpoint --cluster status && /usr/local/bin/etcdctl endpoint --cluster health 2>&1 | grep -q -v 'Error: unhealthy cluster'", "delta": "0:00:05.021414", "end": "2020-10-14 15:17:10.927380", "msg": "non-zero return code", "rc": 1, "start": "2020-10-14 15:17:05.905966", "stderr": "{\"level\":\"warn\",\"ts\":\"2020-10-14T15:17:10.924Z\",\"caller\":\"clientv3/retry_interceptor.go:61\",\"msg\":\"retrying of unary invoker failed\",\"target\":\"endpoint://client-3e0d4a58-d777-47dd-802a-13e217bdc7a2/10.0.2.15:2379\",\"attempt\":0,\"error\":\"rpc error: code = DeadlineExceeded desc = latest connection error: connection error: desc = \\\"transport: Error while dialing dial tcp 10.0.2.15:2379: connect: connection refused\\\"\"}\nError: failed to fetch endpoints from etcd cluster member list: context deadline exceeded", "stderr_lines": ["{\"level\":\"warn\",\"ts\":\"2020-10-14T15:17:10.924Z\",\"caller\":\"clientv3/retry_interceptor.go:61\",\"msg\":\"retrying of unary invoker failed\",\"target\":\"endpoint://client-3e0d4a58-d777-47dd-802a-13e217bdc7a2/10.0.2.15:2379\",\"attempt\":0,\"error\":\"rpc error: code = DeadlineExceeded desc = latest connection error: connection error: desc = \\\"transport: Error while dialing dial tcp 10.0.2.15:2379: connect: connection refused\\\"\"}", "Error: failed to fetch endpoints from etcd cluster member list: context deadline exceeded"], "stdout": "", "stdout_lines": []}
+
+
 卡在以下地方
 TASK [container-engine/docker : Configure docker repository on RedHat/CentOS/Oracle Linux] *****************************changed: [test1] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.81-258561677559415/source", "state": "file", "uid": 0}
 changed: [test3] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.86-247370856306725/source", "state": "file", "uid": 0}
 changed: [test2] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.85-113164698282807/source", "state": "file", "uid": 0}
+
+部署K8s監控面板的文章
+https://bit.ly/376yk6D
 
 curl -k https://10.1.7.152:30864/
 
@@ -36,7 +44,7 @@ master機
 先切到root
 su
 密碼vagrant
-yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim
+yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim sshpass
 setenforce 0
 sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
@@ -46,9 +54,9 @@ modprobe br_netfilter
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
 
-etc/ssh/sshd_config
-PermitRootLogin yes
+/etc/ssh/sshd_config
 Port 2220
+PermitRootLogin yes
 systemctl restart sshd.service
 部屬機的public key放在master機的root vagrant .ssh底下
 

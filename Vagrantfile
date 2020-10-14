@@ -40,6 +40,13 @@ Vagrant.configure("2") do |config|
       # install pip3
       sudo apt-get install python3-pip -y
 
+      # set kubespray
+      cd ~/kubespray
+      sudo pip3 install -r requirements.txt
+      cp -rfp inventory/sample inventory/mycluster
+      # set metrics_server_enabled to true
+      sed -i 's/metrics_server_enabled: false/metrics_server_enabled: true/g' ~/kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml
+
     SHELL
   end
 
