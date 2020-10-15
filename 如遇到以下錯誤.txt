@@ -30,6 +30,7 @@ fatal: [test1]: FAILED! => {"attempts": 4, "changed": false, "cmd": "set -o pipe
 TASK [container-engine/docker : Configure docker repository on RedHat/CentOS/Oracle Linux] *****************************changed: [test1] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.81-258561677559415/source", "state": "file", "uid": 0}
 changed: [test3] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.86-247370856306725/source", "state": "file", "uid": 0}
 changed: [test2] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.85-113164698282807/source", "state": "file", "uid": 0}
+請將Host Guest的防火牆都關掉
 
 部署K8s監控面板的文章
 https://bit.ly/376yk6D
