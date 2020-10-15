@@ -44,6 +44,7 @@ Vagrant.configure("2") do |config|
       cd ~/kubespray
       git checkout 4781df587c778cc868ac183256a5f64d9a1c619d
       sudo pip3 install -r requirements.txt
+      sudo pip install netaddr
       cp -rfp inventory/sample inventory/mycluster
       # set metrics_server_enabled to true
       sed -i 's/metrics_server_enabled: false/metrics_server_enabled: true/g' ~/kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml
@@ -58,7 +59,7 @@ Vagrant.configure("2") do |config|
     master1.vm.network :private_network, ip: "10.1.7.152"
     master1.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
   end
@@ -70,7 +71,7 @@ Vagrant.configure("2") do |config|
     master2.vm.network :private_network, ip: "10.1.7.60"
     master2.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
   end
@@ -82,7 +83,7 @@ Vagrant.configure("2") do |config|
     master3.vm.network :private_network, ip: "10.1.7.158"
     master3.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
   end

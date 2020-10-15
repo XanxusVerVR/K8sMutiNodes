@@ -25,6 +25,11 @@ pip install -r requirements.txt
 TASK [etcd : Configure | Wait for etcd cluster to be healthy] **************************************
 fatal: [test1]: FAILED! => {"attempts": 4, "changed": false, "cmd": "set -o pipefail && /usr/local/bin/etcdctl endpoint --cluster status && /usr/local/bin/etcdctl endpoint --cluster health 2>&1 | grep -q -v 'Error: unhealthy cluster'", "delta": "0:00:05.021414", "end": "2020-10-14 15:17:10.927380", "msg": "non-zero return code", "rc": 1, "start": "2020-10-14 15:17:05.905966", "stderr": "{\"level\":\"warn\",\"ts\":\"2020-10-14T15:17:10.924Z\",\"caller\":\"clientv3/retry_interceptor.go:61\",\"msg\":\"retrying of unary invoker failed\",\"target\":\"endpoint://client-3e0d4a58-d777-47dd-802a-13e217bdc7a2/10.0.2.15:2379\",\"attempt\":0,\"error\":\"rpc error: code = DeadlineExceeded desc = latest connection error: connection error: desc = \\\"transport: Error while dialing dial tcp 10.0.2.15:2379: connect: connection refused\\\"\"}\nError: failed to fetch endpoints from etcd cluster member list: context deadline exceeded", "stderr_lines": ["{\"level\":\"warn\",\"ts\":\"2020-10-14T15:17:10.924Z\",\"caller\":\"clientv3/retry_interceptor.go:61\",\"msg\":\"retrying of unary invoker failed\",\"target\":\"endpoint://client-3e0d4a58-d777-47dd-802a-13e217bdc7a2/10.0.2.15:2379\",\"attempt\":0,\"error\":\"rpc error: code = DeadlineExceeded desc = latest connection error: connection error: desc = \\\"transport: Error while dialing dial tcp 10.0.2.15:2379: connect: connection refused\\\"\"}", "Error: failed to fetch endpoints from etcd cluster member list: context deadline exceeded"], "stdout": "", "stdout_lines": []}
 可試裝Chrony來校準時間
+或將etcd.yml中的etcd_peer_client_auth設為false
+I noticed a feature. If you run the playbook from any node of the future cluster, then everything goes without errors.
+If you start from the host ansible, then only changing the variable in etcd.yml helps
+etcd_peer_client_auth: false
+But this is not safe, so I consider the problem relevant.
 
 卡在以下地方
 TASK [container-engine/docker : Configure docker repository on RedHat/CentOS/Oracle Linux] *****************************changed: [test1] => {"changed": true, "checksum": "d2464d85680ed702486261ec170276873ec04035", "dest": "/etc/yum.repos.d/docker-ce.repo", "gid": 0, "group": "root", "md5sum": "2758d6a9c6e40bd3b686aac3bad2dc1f", "mode": "0644", "owner": "root", "secontext": "system_u:object_r:system_conf_t:s0", "size": 192, "src": "/root/.ansible/tmp/ansible-tmp-1602664906.81-258561677559415/source", "state": "file", "uid": 0}
@@ -294,7 +299,7 @@ sudo passwd root
 cd ~/kubespray
 sudo pip3 install -r requirements.txt
 cp -rfp inventory/sample inventory/mycluster
-確定kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml中的dashboard_enabled與metrics_server_enabled為true
+確定~/kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml中的dashboard_enabled與metrics_server_enabled為true
 pip install netaddr
 declare -a IPS=(10.1.7.152 10.1.7.60 10.1.7.158)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
