@@ -217,13 +217,13 @@ Subsystem       sftp    /usr/libexec/openssh/sftp-server
 # ## different ip than the default iface
 # ## We should set etcd_member_name for etcd cluster. The node that is not a etcd member do not need to set the value, or can set the empty string value.
 [all]
-test1 ansible_host=10.1.7.152 ansible_port=2220 ansible_ssh_user=root ansible_ssh_pass=vagrant
+test1 ansible_host=10.1.7.152 ansible_ssh_user=root ansible_ssh_pass=vagrant
 ip=10.1.7.152 etcd_member_name=etcd1
 
-test2 ansible_host=10.1.7.60 ansible_port=2221 ansible_ssh_user=root ansible_ssh_pass=vagrant
+test2 ansible_host=10.1.7.60 ansible_ssh_user=root ansible_ssh_pass=vagrant
 ip=10.1.7.60 etcd_member_name=etcd2
 
-test3 ansible_host=10.1.7.158 ansible_port=2223 ansible_ssh_user=root ansible_ssh_pass=vagrant
+test3 ansible_host=10.1.7.158 ansible_ssh_user=root ansible_ssh_pass=vagrant
 ip=10.1.7.158 etcd_member_name=etcd3
 # node1 ansible_host=95.54.0.12  # ip=10.3.0.1 etcd_member_name=etcd1
 # node2 ansible_host=95.54.0.13  # ip=10.3.0.2 etcd_member_name=etcd2

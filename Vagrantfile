@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
       zsh
 
       # clone kubespray
-      git clone https://github.com/kubernetes-sigs/kubespray.git -b release-2.14
+      git clone https://github.com/kubernetes-sigs/kubespray.git
 
       # install ansible
       sudo apt-add-repository --yes --update ppa:ansible/ansible
@@ -42,6 +42,7 @@ Vagrant.configure("2") do |config|
 
       # set kubespray
       cd ~/kubespray
+      git checkout 4781df587c778cc868ac183256a5f64d9a1c619d
       sudo pip3 install -r requirements.txt
       cp -rfp inventory/sample inventory/mycluster
       # set metrics_server_enabled to true
