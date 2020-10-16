@@ -12,43 +12,48 @@ Vagrant.configure("2") do |config|
     end
 
     mainmachine.vm.provision "shell", privileged: false, inline: <<-SHELL
-      sudo apt update -y
       # install git
       sudo apt install zsh git software-properties-common -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
       sudo chsh -s /bin/zsh vagrant
       zsh
 
-      # clone kubespray
-      git clone https://github.com/kubernetes-sigs/kubespray.git
+      # clone kubespray & Inventory.ini Dir
+      git clone https://github.com/kubernetes-sigs/kubespray.git -b release-2.12
+      git clone https://github.com/XanxusVerVR/K8sMutiNodes.git
 
       # install ansible
       sudo apt-add-repository --yes --update ppa:ansible/ansible
       sudo apt install ansible -y
 
       # install python3
+      sudo chmod 707 /etc/apt/sources.list
       sudo echo "deb-src http://archive.ubuntu.com/ubuntu/ bionic main" >> /etc/apt/sources.list
       sudo apt-get update -y
       sudo apt-get build-dep python3.6 -y
+      sudo apt install python-minimal -y
 
       # install pip
-      curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-      python get-pip.py
-      sudo echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.zshrc
-      # export PATH=$PATH:$HOME/.local/bin
+      sudo apt-get install python-pip -y
 
       # install pip3
       sudo apt-get install python3-pip -y
 
+      #generate public key
+      ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 >/dev/null
+
       # set kubespray
       cd ~/kubespray
-      git checkout 4781df587c778cc868ac183256a5f64d9a1c619d
+      # install kubespray dependency
       sudo pip3 install -r requirements.txt
-      sudo pip install netaddr
+      pip install netaddr
       cp -rfp inventory/sample inventory/mycluster
       # set metrics_server_enabled to true
       sed -i 's/metrics_server_enabled: false/metrics_server_enabled: true/g' ~/kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml
-
+      CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py 10.1.7.152 10.1.7.60 10.1.7.158
+      cp ~/K8sMutiNodes/inventory.ini ~/kubespray/inventory/mycluster
+      # execute ansible
+      # ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
     SHELL
   end
 

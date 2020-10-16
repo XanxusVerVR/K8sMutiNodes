@@ -289,7 +289,7 @@ sed -i '/\[etcd\]/a node1' inv2.ini
 
 git clone https://github.com/kubernetes-sigs/kubespray.git -b release-2.14
 
-ssh-keygen -t rsa -b 4096 -C "your_email5@example.com"
+
 
 重設root密碼
 sudo passwd root
