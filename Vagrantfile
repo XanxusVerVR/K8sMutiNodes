@@ -24,8 +24,8 @@ Vagrant.configure("2") do |config|
       sed -i 's/plugins=(git zsh-syntax-highlighting)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions)/g' ~/.zshrc
 
       # clone kubespray & Inventory.ini Dir
-      git clone https://github.com/kubernetes-sigs/kubespray.git -b release-2.12
-      git clone https://github.com/XanxusVerVR/K8sMutiNodes.git
+      git clone https://github.com/kubernetes-sigs/kubespray.git
+      git clone git@git.dingyi.io:xanxus.dai/test.git
 
       # install ansible
       sudo apt-add-repository --yes --update ppa:ansible/ansible
@@ -49,6 +49,8 @@ Vagrant.configure("2") do |config|
 
       # set kubespray
       cd ~/kubespray
+      # commit message: Fix proxy and module_hotfixes, author: champtar
+      git checkout 03f316e7a242d75db35e7e9f72f3f08a28b188f3
       # install kubespray dependency
       sudo pip3 install -r requirements.txt
       pip install netaddr
