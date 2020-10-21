@@ -71,6 +71,13 @@ Vagrant.configure("2") do |config|
       sudo apt-get update -y
       sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
+      # install kubectl
+      sudo apt-get install -y apt-transport-https gnupg2
+      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+      echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+      sudo apt-get update -y
+      sudo apt-get install kubectl -y
+
       # set kubespray
       cd ~/kubespray
       # commit message: Fix proxy and module_hotfixes, Author: Etienne Champetier <champetier.etienne@gmail.com>, Date:   Tue Oct 20 02:06:07 2020 -0400
