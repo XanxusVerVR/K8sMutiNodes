@@ -49,11 +49,15 @@ curl -k https://10.1.7.152:30864/
 fatal: [test1]: FAILED! => {"msg": "Timeout (12s) waiting for privilege escalation prompt: "}
 請檢查SSH相關的連線設定 如IP Port是否正確
 
-master機
+master機(CentOS7)
 先切到root
 su
 密碼vagrant
+
 yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim sshpass
+(Ubuntu 18.04)
+apt-get update -y && apt-get install sshpass -y
+
 setenforce 0
 sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
@@ -226,14 +230,14 @@ Subsystem       sftp    /usr/libexec/openssh/sftp-server
 # ## different ip than the default iface
 # ## We should set etcd_member_name for etcd cluster. The node that is not a etcd member do not need to set the value, or can set the empty string value.
 [all]
-test1 ansible_host=10.1.7.152 ansible_ssh_user=root ansible_ssh_pass=vagrant
-ip=10.1.7.152 etcd_member_name=etcd1
+test1 ansible_host=10.1.169.123 ansible_ssh_user=root ansible_ssh_pass=26597795
+ip=10.1.169.123 etcd_member_name=etcd1
 
-test2 ansible_host=10.1.7.60 ansible_ssh_user=root ansible_ssh_pass=vagrant
-ip=10.1.7.60 etcd_member_name=etcd2
+test2 ansible_host=10.1.169.177 ansible_ssh_user=root ansible_ssh_pass=26597795
+ip=10.1.169.177 etcd_member_name=etcd2
 
-test3 ansible_host=10.1.7.158 ansible_ssh_user=root ansible_ssh_pass=vagrant
-ip=10.1.7.158 etcd_member_name=etcd3
+test3 ansible_host=10.1.169.233 ansible_ssh_user=root ansible_ssh_pass=26597795
+ip=10.1.169.233 etcd_member_name=etcd3
 # node1 ansible_host=95.54.0.12  # ip=10.3.0.1 etcd_member_name=etcd1
 # node2 ansible_host=95.54.0.13  # ip=10.3.0.2 etcd_member_name=etcd2
 # node3 ansible_host=95.54.0.14  # ip=10.3.0.3 etcd_member_name=etcd3

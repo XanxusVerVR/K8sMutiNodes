@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
 
       # set kubespray
       cd ~/kubespray
-      # commit message: Fix proxy and module_hotfixes, author: champtar
+      # commit message: Fix proxy and module_hotfixes, Author: Etienne Champetier <champetier.etienne@gmail.com>, Date:   Tue Oct 20 02:06:07 2020 -0400
       git checkout 03f316e7a242d75db35e7e9f72f3f08a28b188f3
       # install kubespray dependency
       sudo pip3 install -r requirements.txt
