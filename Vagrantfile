@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
 
       # clone kubespray & Inventory.ini Dir
       git clone https://github.com/kubernetes-sigs/kubespray.git
-      git clone git@git.dingyi.io:xanxus.dai/test.git
+      git clone https://github.com/XanxusVerVR/K8sMutiNodes.git
 
       # install ansible
       sudo apt-add-repository --yes --update ppa:ansible/ansible
@@ -46,6 +46,24 @@ Vagrant.configure("2") do |config|
 
       #generate public key
       ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 >/dev/null
+
+      # install docker
+      sudo apt-get remove docker docker-engine docker.io containerd runc
+      sudo apt-get update -y
+      sudo apt-get install \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg-agent \
+        software-properties-common -y
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo apt-key fingerprint 0EBFCD88
+      sudo add-apt-repository \
+        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) \
+        stable"
+      sudo apt-get update -y
+      sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
       # set kubespray
       cd ~/kubespray
