@@ -7,11 +7,14 @@ Vagrant.configure("2") do |config|
     mainmachine.vm.network :private_network, ip: "10.1.7.189"
     mainmachine.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
 
     mainmachine.vm.provision "shell", privileged: false, inline: <<-SHELL
+      # Setting Password-less Sudo
+      sudo sed -i '/^%admin ALL=(ALL) ALL.*/a vagrant ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+
       # install git
       sudo apt install zsh git software-properties-common -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
@@ -22,6 +25,9 @@ Vagrant.configure("2") do |config|
       git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
       sed -i 's/plugins=(git)/plugins=(git zsh-syntax-highlighting)/g' ~/.zshrc
       sed -i 's/plugins=(git zsh-syntax-highlighting)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions)/g' ~/.zshrc
+
+      # change theme
+      sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="fino"/g' ~/.zshrc
 
       # clone kubespray & Inventory.ini Dir
       git clone https://github.com/kubernetes-sigs/kubespray.git
