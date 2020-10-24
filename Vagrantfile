@@ -5,9 +5,12 @@ Vagrant.configure("2") do |config|
     deploy.vm.hostname = 'k8s-deploy'
     deploy.vm.define vm_name = 'deploy'
     deploy.vm.network :private_network, ip: "10.1.7.189"
+    deploy.vm.network "forwarded_port", guest: 444, host: 444
+    deploy.vm.network "forwarded_port", guest: 81, host: 81
+    deploy.vm.network "forwarded_port", guest: 5555, host: 5555
     deploy.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
     end
 
@@ -77,21 +80,6 @@ Vagrant.configure("2") do |config|
       echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
       sudo apt-get update -y
       sudo apt-get install kubectl -y
-
-      # set kubespray
-      cd ~/kubespray
-      # commit message: Fix proxy and module_hotfixes, Author: Etienne Champetier <champetier.etienne@gmail.com>, Date:   Tue Oct 20 02:06:07 2020 -0400
-      git checkout 03f316e7a242d75db35e7e9f72f3f08a28b188f3
-      # install kubespray dependency
-      sudo pip3 install -r requirements.txt
-      pip install netaddr
-      cp -rfp inventory/sample inventory/mycluster
-      # set metrics_server_enabled to true
-      sed -i 's/metrics_server_enabled: false/metrics_server_enabled: true/g' ~/kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml
-      CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py 10.1.7.152 10.1.7.60 10.1.7.158
-      cp ~/K8sMutiNodes/inventory.ini ~/kubespray/inventory/mycluster
-      # execute ansible
-      # ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
     SHELL
   end
 
