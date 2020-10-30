@@ -5,9 +5,6 @@ Vagrant.configure("2") do |config|
     deploy.vm.hostname = 'k8s-deploy'
     deploy.vm.define vm_name = 'deploy'
     deploy.vm.network :private_network, ip: "10.1.7.189"
-    deploy.vm.network "forwarded_port", guest: 444, host: 444
-    deploy.vm.network "forwarded_port", guest: 81, host: 81
-    deploy.vm.network "forwarded_port", guest: 5555, host: 5555
     deploy.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
       v.customize ["modifyvm", :id, "--memory", 4096]
@@ -18,16 +15,17 @@ Vagrant.configure("2") do |config|
       # Setting Password-less Sudo
       sudo sed -i '/^%admin ALL=(ALL) ALL.*/a vagrant ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
 
+      sudo apt-get update -y
+
       # install git
-      sudo apt install zsh git software-properties-common -y
+      sudo apt install zsh git unzip software-properties-common -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
       sudo chsh -s /bin/zsh vagrant
       zsh
       # install and set zsh plugin
       git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
       git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-      sed -i 's/plugins=(git)/plugins=(git zsh-syntax-highlighting)/g' ~/.zshrc
-      sed -i 's/plugins=(git zsh-syntax-highlighting)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions)/g' ~/.zshrc
+      sed -i 's/plugins=(git)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions)/g' ~/.zshrc
 
       # change theme
       sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="fino"/g' ~/.zshrc
@@ -80,6 +78,35 @@ Vagrant.configure("2") do |config|
       echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
       sudo apt-get update -y
       sudo apt-get install kubectl -y
+      sudo kubectl completion zsh > ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/_kubectl
+
+      # install java maven gradle helm
+      wget https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u272-b10/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz --directory-prefix=/tmp
+      wget https://services.gradle.org/distributions/gradle-6.7-bin.zip --directory-prefix=/tmp
+      wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz --directory-prefix=/tmp
+      wget https://get.helm.sh/helm-v3.4.0-linux-amd64.tar.gz --directory-prefix=/tmp
+      sudo tar zxvf /tmp/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz -C /usr/share
+      sudo unzip /tmp/gradle-6.7-bin.zip -d /usr/share
+      sudo tar zxvf /tmp/apache-maven-3.6.3-bin.tar.gz -C /usr/share
+      sudo tar zxvf /tmp/helm-v3.4.0-linux-amd64.tar.gz -C /usr/share
+      sudo cp /usr/share/linux-amd64/helm /usr/local/bin/
+      sudo helm completion zsh > ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/_helm
+      sed -i "$ a export PATH=/usr/share/jdk8u272-b10/bin:/usr/share/gradle-6.7/bin:/usr/share/apache-maven-3.6.3/bin:$PATH" ~/.zshrc
+
+      # set kubespray
+      cd ~/kubespray
+      # commit message: Fix proxy and module_hotfixes, Author: Etienne Champetier <champetier.etienne@gmail.com>, Date:   Tue Oct 20 02:06:07 2020 -0400
+      git checkout 03f316e7a242d75db35e7e9f72f3f08a28b188f3
+      # install kubespray dependency
+      sudo pip3 install -r requirements.txt
+      pip install netaddr
+      cp -rfp inventory/sample inventory/mycluster
+      # set metrics_server_enabled to true
+      sed -i 's/metrics_server_enabled: false/metrics_server_enabled: true/g' ~/kubespray/inventory/mycluster/group_vars/k8s-cluster/addons.yml
+      CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py 10.1.7.152 10.1.7.60 10.1.7.158
+      cp ~/K8sMutiNodes/inventory.ini ~/kubespray/inventory/mycluster
+      # execute ansible
+      # ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
     SHELL
   end
 
