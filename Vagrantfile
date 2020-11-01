@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
       sudo apt-get update -y
 
       # install git
-      sudo apt install zsh git unzip software-properties-common -y
+      sudo apt install zsh git unzip software-properties-common jq -y
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
       sudo chsh -s /bin/zsh vagrant
       zsh
