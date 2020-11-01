@@ -79,6 +79,9 @@ Vagrant.configure("2") do |config|
       sudo apt-get update -y
       sudo apt-get install kubectl -y
       sudo kubectl completion zsh > ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/_kubectl
+      echo "alias k='kubectl'" >> ~/.zshrc
+      echo "alias kd='kubectl describe'" >> ~/.zshrc
+      echo 'complete -F __start_kubectl k' >> ~/.zshrc
 
       # install java maven gradle helm
       wget https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u272-b10/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz --directory-prefix=/tmp
