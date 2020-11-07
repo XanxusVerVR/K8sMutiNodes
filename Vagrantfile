@@ -95,7 +95,23 @@ Vagrant.configure("2") do |config|
       sudo cp /usr/share/linux-amd64/helm /usr/local/bin/
       sudo helm completion zsh > ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/_helm
       sed -i "$ a export HELM_EXPERIMENTAL_OCI=1" ~/.zshrc
-      sed -i "$ a export PATH=/usr/share/jdk8u272-b10/bin:/usr/share/gradle-6.7/bin:/usr/share/apache-maven-3.6.3/bin:$PATH" ~/.zshrc
+      sed -i "$ a export PATH=/usr/share/jdk8u272-b10/bin:/usr/share/gradle-6.7/bin:/usr/share/apache-maven-3.6.3/bin:/usr/share/go/bin:$PATH" ~/.zshrc
+
+      # install go
+      wget https://golang.org/dl/go1.15.4.linux-amd64.tar.gz --directory-prefix=/tmp
+      sudo tar -xzf /tmp/go1.15.4.linux-amd64.tar.gz -C /usr/share
+      source ~/.zshrc
+
+      # install kubecolor
+      go get -u github.com/dty1er/kubecolor/cmd/kubecolor
+      sudo cp ~/go/bin/kubecolor /usr/local/bin
+      echo "alias kc='kubecolor'" >> ~/.zshrc
+      echo "alias kcd='kubecolor describe'" >> ~/.zshrc
+
+      # install kind
+      curl -Lo ./kind "https://kind.sigs.k8s.io/dl/v0.9.0/kind-$(uname)-amd64"
+      chmod +x ./kind
+      sudo cp ./kind /usr/local/bin
 
       # set kubespray
       cd ~/kubespray
