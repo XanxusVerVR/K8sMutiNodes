@@ -54,7 +54,7 @@ master機(CentOS7)
 su
 密碼vagrant
 
-yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim sshpass
+yum -y install epel-release && yum -y update && yum -y install htop iftop iotop vim sshpass net-tools
 (Ubuntu 18.04)
 apt-get update -y && apt-get install sshpass -y
 
