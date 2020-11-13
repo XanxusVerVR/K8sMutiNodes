@@ -39,6 +39,26 @@ changed: [test2] => {"changed": true, "checksum": "d2464d85680ed702486261ec17027
 
 可更改重試次數
 kubespray/roles/etcd/tasks/configure.yml
+在 Configure | Wait for etcd cluster to be healthy 這個tack的deley這行，可把random+號後的數字增加
+delay: "{{ retry_stagger | random + 60 }}"
+
+如遇到以下錯誤
+TASK [kubernetes/kubeadm : Set ca.crt file permission] *********************************************************************
+ok: [node1] => {"changed": false, "gid": 0, "group": "root", "mode": "0644", "owner": "root", "path": "/etc/kubernetes/ssl/ca.crt", "secontext": "unconfined_u:object_r:etc_t:s0", "size": 1066, "state": "file", "uid": 0}
+ok: [node2] => {"changed": false, "gid": 0, "group": "root", "mode": "0644", "owner": "root", "path": "/etc/kubernetes/ssl/ca.crt", "secontext": "unconfined_u:object_r:etc_t:s0", "size": 1066, "state": "file", "uid": 0}
+fatal: [node4]: FAILED! => {"changed": false, "msg": "file (/etc/kubernetes/ssl/ca.crt) is absent, cannot continue", "path": "/etc/kubernetes/ssl/ca.crt", "state": "absent"}
+
+NO MORE HOSTS LEFT *********************************************************************************************************
+
+PLAY RECAP *****************************************************************************************************************
+ip=10.1.169.153            : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ip=10.1.6.243              : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ip=10.1.6.48               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+node1                      : ok=468  changed=11   unreachable=0    failed=0    skipped=708  rescued=0    ignored=0
+node2                      : ok=429  changed=10   unreachable=0    failed=0    skipped=480  rescued=0    ignored=0
+node4                      : ok=447  changed=44   unreachable=0    failed=1    skipped=467  rescued=0    ignored=0
+還沒解
 
 部署K8s監控面板的文章
 https://bit.ly/376yk6D
@@ -312,3 +332,16 @@ declare -a IPS=(10.1.7.152 10.1.7.60 10.1.7.158)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 編輯~/kubespray/inventory/mycluster/inventory.ini
 ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
+
+安裝的時間
+8~18分
+加節點的時間
+ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root scale.yml -b -v
+5:30內
+移除節點的時間
+ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node3 -e reset_nodes=false
+ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node5
+不到5分鐘
+
+
+ansible-playbook -i inventory/remko/hosts.yaml reset.yml --become --become-user=root -b -v
