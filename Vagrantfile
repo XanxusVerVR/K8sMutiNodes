@@ -5,6 +5,7 @@ Vagrant.configure("2") do |config|
     deploy.vm.hostname = 'k8s-deploy'
     deploy.vm.define vm_name = 'deploy'
     deploy.vm.network :private_network, ip: "10.1.7.189"
+    deploy.disksize.size = '20GB'
     deploy.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
       v.customize ["modifyvm", :id, "--memory", 4096]
@@ -116,6 +117,13 @@ Vagrant.configure("2") do |config|
       curl -Lo ./kind "https://kind.sigs.k8s.io/dl/v0.9.0/kind-$(uname)-amd64"
       chmod +x ./kind
       sudo cp ./kind /usr/local/bin
+cat << EOF > config.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+EOF
 
       # set kubespray
       cd ~/kubespray
@@ -131,6 +139,46 @@ Vagrant.configure("2") do |config|
       cp ~/K8sMutiNodes/inventory.ini ~/kubespray/inventory/mycluster
       # execute ansible
       # ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
+
+      # set vimrc
+      git clone https://github.com/Valloric/vim-valloric-colorscheme.git ~/vim-valloric-colorscheme
+      mkdir -p ~/.vim/colors
+      cp ~/vim-valloric-colorscheme/colors/valloric.vim ~/.vim/colors
+cat << EOF > ~/.vimrc
+syntax enable "開啟語法高亮度
+set nu "顯示行號
+set encoding=utf-8 "讓vim內部有辦法使用使用所有的字元
+set fileencodings=utf-8,utf-16,big5,gb2312,gbk,gb18030,euc-jp,euc-kr,latin1 "設定其在開啟文字檔時要優先使用什麼字元編碼方式來開啟
+set smartindent "基於autoindent之上，針對「{」(左大括號)後所產生的新行，再多往內縮排一次
+set expandtab "Tab會轉換成space字元
+set tabstop=2 "定義在vim中，Tab寬度要有幾個字元
+set softtabstop=2 "定義一個Tab單位，不足的部分要用幾個空白字元補齊
+set shiftwidth=2 "設定自動縮排產生的字元寬度
+set smarttab "讓在行首插入縮排字元時，也能使用「shiftwidth」環境變數所定義的寬度
+set noconfirm "關閉確認功能
+set backspace=start "允許使用「ctrl+w」和「ctrl+u」快速鍵來刪除獨立詞語和同類字元(縮排、非縮排字元)
+set ruler "讓右下角顯示座標
+set t_Co=256 "能支援256色
+set hlsearch "設定高亮度顯示搜尋結果
+set incsearch "在關鍵字還沒完全輸入完畢前就顯示結果
+set cursorline "顯示游標所在的列
+set ignorecase "忽略大小寫搜尋
+set laststatus=2 "開啟狀態列
+set showcmd "開啟右下角顯示目前指令輸入到哪
+set showmode "開啟vim的模式提示
+set wrap "自動換行
+set autowrite "當vim編輯器失去焦點，就會自動存檔
+colorscheme valloric "顏色主題
+hi CursorLine cterm=none ctermbg=DarkMagenta ctermfg=White
+
+"#######################################################
+" encode
+if has("multi_byte")
+    set fileencodings=utf-8,utf-16,big5,gb2312,gbk,gb18030,euc-jp,euc-kr,latin1
+else
+    echoerr "If +multi_byte is not included, you should compile Vim with big features."
+endif
+EOF
     SHELL
   end
 
