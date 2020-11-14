@@ -141,9 +141,9 @@ EOF
       # ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml -b -v
 
       # set vimrc
-      git clone https://github.com/Valloric/vim-valloric-colorscheme.git ~/vim-valloric-colorscheme
+      git clone https://github.com/morhetz/gruvbox.git ~/gruvbox
       mkdir -p ~/.vim/colors
-      cp ~/vim-valloric-colorscheme/colors/valloric.vim ~/.vim/colors
+      cp ~/gruvbox/colors/gruvbox.vim ~/.vim/colors
 cat << EOF > ~/.vimrc
 syntax enable "開啟語法高亮度
 set nu "顯示行號
@@ -168,7 +168,8 @@ set showcmd "開啟右下角顯示目前指令輸入到哪
 set showmode "開啟vim的模式提示
 set wrap "自動換行
 set autowrite "當vim編輯器失去焦點，就會自動存檔
-colorscheme valloric "顏色主題
+set background=dark
+colorscheme gruvbox "顏色主題
 hi CursorLine cterm=none ctermbg=DarkMagenta ctermfg=White
 
 "#######################################################
