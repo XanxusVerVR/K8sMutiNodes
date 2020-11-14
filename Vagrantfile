@@ -142,8 +142,11 @@ EOF
 
       # set vimrc
       git clone https://github.com/morhetz/gruvbox.git ~/gruvbox
+      git clone https://github.com/vim-airline/vim-airline.git /tmp/vim-airline
       mkdir -p ~/.vim/colors
+      cp -r /tmp/vim-airline/. ~/.vim
       cp ~/gruvbox/colors/gruvbox.vim ~/.vim/colors
+      echo "~/gruvbox/gruvbox_256palette.sh" >> ~/.zshrc
 cat << EOF > ~/.vimrc
 syntax enable "開啟語法高亮度
 set nu "顯示行號
@@ -163,14 +166,16 @@ set hlsearch "設定高亮度顯示搜尋結果
 set incsearch "在關鍵字還沒完全輸入完畢前就顯示結果
 set cursorline "顯示游標所在的列
 set ignorecase "忽略大小寫搜尋
-set laststatus=2 "開啟狀態列
 set showcmd "開啟右下角顯示目前指令輸入到哪
 set showmode "開啟vim的模式提示
 set wrap "自動換行
 set autowrite "當vim編輯器失去焦點，就會自動存檔
+let g:gruvbox_contrast_dark = 'hard'
 set background=dark
 colorscheme gruvbox "顏色主題
 hi CursorLine cterm=none ctermbg=DarkMagenta ctermfg=White
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
 
 "#######################################################
 " encode
