@@ -173,7 +173,8 @@ set autowrite "當vim編輯器失去焦點，就會自動存檔
 let g:gruvbox_contrast_dark = 'hard'
 set background=dark
 colorscheme gruvbox "顏色主題
-hi CursorLine cterm=none ctermbg=DarkMagenta ctermfg=White
+hi CursorLine cterm=bold ctermbg=054 ctermfg=White
+" ctermbg為背景色 ctermfg為前景色(字體顏色) cterm為字體形式
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
 
