@@ -170,6 +170,7 @@ set showcmd "開啟右下角顯示目前指令輸入到哪
 set showmode "開啟vim的模式提示
 set wrap "自動換行
 set autowrite "當vim編輯器失去焦點，就會自動存檔
+autocmd BufWritePre * :%s/\s\+$// "儲存時移除行尾空白
 let g:gruvbox_contrast_dark = 'hard'
 set background=dark
 colorscheme gruvbox "顏色主題
