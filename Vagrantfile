@@ -20,6 +20,9 @@ Vagrant.configure("2") do |config|
 
       # install git
       sudo apt install zsh git unzip software-properties-common jq -y
+      git config --global user.name "Mr. Dai"
+      git config --global user.email xanxus@example.com
+      git config --global core.editor "vim"
       wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
       sudo chsh -s /bin/zsh vagrant
       zsh
