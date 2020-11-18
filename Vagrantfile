@@ -5,7 +5,6 @@ Vagrant.configure("2") do |config|
     deploy.vm.hostname = 'k8s-deploy'
     deploy.vm.define vm_name = 'deploy'
     deploy.vm.network :private_network, ip: "10.1.7.189"
-    deploy.disksize.size = '20GB'
     deploy.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
       v.customize ["modifyvm", :id, "--memory", 4096]
