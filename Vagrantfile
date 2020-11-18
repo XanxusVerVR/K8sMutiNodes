@@ -166,7 +166,8 @@ set ruler "讓右下角顯示座標
 set t_Co=256 "能支援256色
 set hlsearch "設定高亮度顯示搜尋結果
 set incsearch "在關鍵字還沒完全輸入完畢前就顯示結果
-set cursorline "顯示游標所在的列
+set cursorline "顯示游標所在的row
+set cursorcolumn "顯示游標所在的column
 set ignorecase "忽略大小寫搜尋
 set showcmd "開啟右下角顯示目前指令輸入到哪
 set showmode "開啟vim的模式提示
@@ -177,6 +178,7 @@ let g:gruvbox_contrast_dark = 'hard'
 set background=dark
 colorscheme gruvbox "顏色主題
 hi CursorLine cterm=bold ctermbg=054 ctermfg=White
+hi CursorColumn cterm=bold ctermbg=052 ctermfg=White
 " ctermbg為背景色 ctermfg為前景色(字體顏色) cterm為字體形式
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
