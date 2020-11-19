@@ -15,6 +15,9 @@ Vagrant.configure("2") do |config|
       # Setting Password-less Sudo
       sudo sed -i '/^%admin ALL=(ALL) ALL.*/a vagrant ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
 
+      # set timezone
+      sudo timedatectl set-timezone Asia/Taipei
+
       sudo apt-get update -y
 
       # install git
