@@ -33,9 +33,10 @@ Vagrant.configure("2") do |config|
       # change theme
       sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="fino"/g' ~/.zshrc
 
-      # clone kubespray & Inventory.ini Dir
+      # clone kubespray & Inventory.ini Dir & K8s Course
       git clone https://github.com/kubernetes-sigs/kubespray.git
       git clone https://github.com/XanxusVerVR/K8sMutiNodes.git
+      git clone https://github.com/hwchiu/hiskio-course.git
 
       # install ansible
       sudo apt-add-repository --yes --update ppa:ansible/ansible
