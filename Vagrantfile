@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
     deploy.vm.provision "shell", privileged: false, inline: <<-SHELL
       # Setting Password-less Sudo
       sudo sed -i '/^%admin ALL=(ALL) ALL.*/a vagrant ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
-
+      sudo sed -i '1i Defaults  editor=/usr/bin/vim' /etc/sudoers
       # set timezone
       sudo timedatectl set-timezone Asia/Taipei
 
