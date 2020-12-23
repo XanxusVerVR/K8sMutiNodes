@@ -1,8 +1,22 @@
 如遇到以下錯誤
+TASK [remove-node/remove-etcd-node : Lookup etcd member id] *****************************************************************
+fatal: [node4]: FAILED! => {"msg": "The field 'environment' has an invalid value, which includes an undefined variable. The error was: 'fallback_ips' is undefined\n\nThe error appears to be in '/home/deploy/kubespray-release-2.14/roles/remove-node/remove-etcd-node/tasks/main.yml': line 27, column 3, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n- name: Lookup etcd member id\n  ^ here\n"}
+...ignoring
+Wednesday 23 December 2020  18:28:37 +0800 (0:00:00.060)       0:00:16.840 ****
+
+TASK [remove-node/remove-etcd-node : Remove etcd member from cluster] *******************************************************
+fatal: [node4]: FAILED! => {"msg": "The conditional check 'etcd_member_id.stdout | length > 0' failed. The error was: error while evaluating conditional (etcd_member_id.stdout | length > 0): 'dict object' has no attribute 'stdout'\n\nThe error appears to be in '/home/deploy/kubespray-release-2.14/roles/remove-node/remove-etcd-node/tasks/main.yml': line 44, column 3, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n- name: Remove etcd member from cluster\n  ^ here\n"}
+會出現這錯誤應該是第一次下移除節點的指令：
+ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node3
+請回到inventory.ini，把要移除的節點，從inventory.ini的etcd區塊移除
+再執行一次：
+ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node3
+應該就會成功
+
+如遇到以下錯誤
 ERROR! no action detected in task. This often indicates a misspelled module name, or incorrect module path
 在部屬機安裝ansible-modules-hashivault
 pip install ansible-modules-hashivault
-
 
 如遇到以下錯誤
 to use the 'ssh' connection type with passwords, you must install the sshpass program"
@@ -250,61 +264,35 @@ Subsystem       sftp    /usr/libexec/openssh/sftp-server
 # ## different ip than the default iface
 # ## We should set etcd_member_name for etcd cluster. The node that is not a etcd member do not need to set the value, or can set the empty string value.
 [all]
-test1 ansible_host=10.1.169.123 ansible_ssh_user=root ansible_ssh_pass=26597795
-ip=10.1.169.123 etcd_member_name=etcd1
+node1 ansible_host=10.1.6.246 ansible_ssh_user=root ansible_ssh_pass=26597795
+ip=10.1.6.246 etcd_member_name=etcd1
 
-test2 ansible_host=10.1.169.177 ansible_ssh_user=root ansible_ssh_pass=26597795
-ip=10.1.169.177 etcd_member_name=etcd2
+node2 ansible_host=10.1.6.51 ansible_ssh_user=root ansible_ssh_pass=26597795
+ip=10.1.6.51 etcd_member_name=etcd2
 
-test3 ansible_host=10.1.169.233 ansible_ssh_user=root ansible_ssh_pass=26597795
-ip=10.1.169.233 etcd_member_name=etcd3
-# node1 ansible_host=95.54.0.12  # ip=10.3.0.1 etcd_member_name=etcd1
-# node2 ansible_host=95.54.0.13  # ip=10.3.0.2 etcd_member_name=etcd2
-# node3 ansible_host=95.54.0.14  # ip=10.3.0.3 etcd_member_name=etcd3
-# node4 ansible_host=95.54.0.15  # ip=10.3.0.4 etcd_member_name=etcd4
-# node5 ansible_host=95.54.0.16  # ip=10.3.0.5 etcd_member_name=etcd5
-# node6 ansible_host=95.54.0.17  # ip=10.3.0.6 etcd_member_name=etcd6
-
-# ## configure a bastion host if your nodes are not directly reachable
-# bastion ansible_host=x.x.x.x ansible_user=some_user
+node4 ansible_host=10.1.169.153 ansible_ssh_user=root ansible_ssh_pass=26597795
+ip=10.1.169.153 etcd_member_name=etcd3
 
 [kube-master]
-test1
-test2
-test3
-# node1
-# node2
+node1
+node2
+node4
 
 [etcd]
-test1
-test2
-test3
-# node1
-# node2
-# node3
+node1
+node2
+node4
 
 [kube-node]
-test1
-test2
-test3
-# node2
-# node3
-# node4
-# node5
-# node6
+node1
+node2
+node4
 
 [calico-rr]
 
 [k8s-cluster:children]
 kube-master
 kube-node
-
-
-
-
-
-
-
 
 
 # 找到metrics_server_enabled: false 換成 metrics_server_enabled: true
@@ -338,7 +326,7 @@ ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=roo
 加節點的時間
 ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root scale.yml -b -v
 5:30內
-移除節點的時間
+移除節點的時間, 如果要移除的節點沒在線上，那就加reset_nodes=false
 ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node3 -e reset_nodes=false
 ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node5
 ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=k8s-metal-2,k8s-metal-3
