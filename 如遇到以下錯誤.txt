@@ -323,16 +323,16 @@ ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=roo
 安裝的時間
 8~18分
 加節點的時間
-ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root scale.yml -b -v
+ansible-playbook -i inventory/mycluster/$INVENTORY_FILE --become --become-user=root scale.yml -b -v
 5:30內
 移除節點的時間, 如果要移除的節點沒在線上，那就加reset_nodes=false
-ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node3 -e reset_nodes=false
-ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=node5
-ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -b -v -e node=k8s-metal-2,k8s-metal-3
+ansible-playbook -i inventory/mycluster/$INVENTORY_FILE remove-node.yml -b -v -e node=node3 -e reset_nodes=false
+ansible-playbook -i inventory/mycluster/$INVENTORY_FILE remove-node.yml -b -v -e node=node5
+ansible-playbook -i inventory/mycluster/$INVENTORY_FILE remove-node.yml -b -v -e node=k8s-metal-2,k8s-metal-3
 不到5分鐘
 
-
-ansible-playbook -i inventory/remko/hosts.yaml reset.yml --become --become-user=root -b -v
+還原到沒Kubernetes的狀態
+ansible-playbook -i inventory/mycluster/$INVENTORY_FILE reset.yml --become --become-user=root -b -v
 
 改kubernetes版本
 kubespray/inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
