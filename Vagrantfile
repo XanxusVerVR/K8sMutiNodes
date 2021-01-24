@@ -236,4 +236,15 @@ EOF
     end
   end
 
+  config.vm.define "ubuntu" do |ubuntu|
+    ubuntu.vm.box = "ubuntu/bionic64"
+    ubuntu.vm.hostname = 'ubuntu'
+    ubuntu.vm.define vm_name = 'ubuntu'
+    ubuntu.vm.network :private_network, ip: "10.1.7.111"
+    ubuntu.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 4096]
+      v.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all']
+    end
+  end
 end
