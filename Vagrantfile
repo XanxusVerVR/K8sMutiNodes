@@ -5,6 +5,8 @@ Vagrant.configure("2") do |config|
     deploy.vm.hostname = 'k8s-deploy'
     deploy.vm.define vm_name = 'deploy'
     deploy.vm.network :private_network, ip: "10.1.7.189"
+    # deploy.vm.network "forwarded_port", guest: 80, host: 80
+    # deploy.vm.network "forwarded_port", guest: 443, host: 443
     deploy.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
       v.customize ["modifyvm", :id, "--memory", 4096]
