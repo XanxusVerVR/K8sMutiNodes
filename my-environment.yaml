@@ -68,3 +68,19 @@
     - name: Print return information from the previous task
       ansible.builtin.debug:
         var: job_result
+    - name: Clone zsh-syntax-highlighting repository
+      become_user: vagrant
+      git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
+    - name: Clone zsh-autosuggestions repository
+      become_user: vagrant
+      git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: ~/.oh-my-zsh/plugins/zsh-autosuggestions
+    - name: set zsh plugins
+      become_user: vagrant
+      ansible.builtin.lineinfile:
+        path: ~/.zshrc
+        regexp: '^plugins='
+        line: plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
