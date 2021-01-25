@@ -1,86 +1,95 @@
 - hosts: myhost
+  vars:
+    env_variable: SHELL
   become: yes #作為root執行 放這會作用每個task
   tasks:
-    - name: set sudoers nopassword
-      ansible.builtin.lineinfile:
-        create: yes
-        path: /etc/sudoers.d/myOverrides
-        state: present
-        line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
-    - name: set sudoers default editor
-      ansible.builtin.lineinfile:
-        path: /etc/sudoers
-        state: present
-        line: 'Defaults  editor=/usr/bin/vim'
-    - name: set timezone
-      ansible.builtin.shell:
-        cmd: timedatectl set-timezone Asia/Taipei
-    - name: Update repositories cache
-      apt:
-        update_cache: yes
-    - name: Install the package "git"
-      apt:
-        name: git
-    - name: Install the package "zsh"
-      apt:
-        name: zsh
-    - name: Install the package "unzip"
-      apt:
-        name: unzip
-    - name: Install the package "software-properties-common"
-      apt:
-        name: software-properties-common
-    - name: Install the package "jq"
-      apt:
-        name: jq
-    - name: set git config
-      ansible.builtin.shell: |
-        git config --global user.name "Mr. Dai"
-        git config --global user.email xanxus@example.com
-        git config --global core.editor "vim"
-    - name: Download oh-my-zsh
+    # - name: set sudoers nopassword
+    #   ansible.builtin.lineinfile:
+    #     create: yes
+    #     path: /etc/sudoers.d/myOverrides
+    #     state: present
+    #     line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
+    # - name: set sudoers default editor
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/sudoers
+    #     state: present
+    #     line: 'Defaults  editor=/usr/bin/vim'
+    # - name: set timezone
+    #   ansible.builtin.shell:
+    #     cmd: timedatectl set-timezone Asia/Taipei
+    # - name: Update repositories cache
+    #   apt:
+    #     update_cache: yes
+    # - name: Install the package "git"
+    #   apt:
+    #     name: git
+    # - name: Install the package "zsh"
+    #   apt:
+    #     name: zsh
+    # - name: Install the package "unzip"
+    #   apt:
+    #     name: unzip
+    # - name: Install the package "software-properties-common"
+    #   apt:
+    #     name: software-properties-common
+    # - name: Install the package "jq"
+    #   apt:
+    #     name: jq
+    # - name: set git config
+    #   ansible.builtin.shell: |
+    #     git config --global user.name "Mr. Dai"
+    #     git config --global user.email xanxus@example.com
+    #     git config --global core.editor "vim"
+    # - name: Download oh-my-zsh
+    #   register: result
+    #   become_user: vagrant
+    #   get_url:
+    #     url: https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
+    #     dest: ~/
+    #     mode: '0600'
+    # - name: install oh-my-zsh
+    #   become_user: vagrant
+    #   register: result
+    #   async: 15
+    #   poll: 0
+    #   ansible.builtin.shell: |
+    #     sh ~/install.sh
+    # - name: set oh-my-zsh
+    #   async: 15
+    #   poll: 5
+    #   register: scrout
+    #   ansible.builtin.shell: |
+    #     chsh -s /bin/zsh vagrant
+    #     zsh
+    # - name: Checking the Job Status
+    #   async_status:
+    #     jid: "{{ scrout.ansible_job_id }}"
+    #   register: job_result
+    #   until: job_result.finished
+    #   retries: 10
+    # - name: Print return information from the previous task
+    #   ansible.builtin.debug:
+    #     var: job_result
+    # - name: Clone zsh-syntax-highlighting repository
+    #   become_user: vagrant
+    #   git:
+    #     repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    #     dest: ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
+    # - name: Clone zsh-autosuggestions repository
+    #   become_user: vagrant
+    #   git:
+    #     repo: https://github.com/zsh-users/zsh-autosuggestions
+    #     dest: ~/.oh-my-zsh/plugins/zsh-autosuggestions
+    # - name: set zsh plugins
+    #   become_user: vagrant
+    #   ansible.builtin.lineinfile:
+    #     path: ~/.zshrc
+    #     regexp: '^plugins='
+    #     line: plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+    - name: Run a command that uses non-posix shell-isms (in this example /bin/sh doesn't handle redirection and wildcards together but bash does)
+      become_user: vagrant
+      shell: 'echo ${{ env_variable }}'
       register: result
-      become_user: vagrant
-      get_url:
-        url: https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
-        dest: ~/
-        mode: '0600'
-    - name: install oh-my-zsh
-      become_user: vagrant
-      register: result
-      async: 15
-      poll: 0
-      ansible.builtin.shell: |
-        sh ~/install.sh
-    - name: set oh-my-zsh
-      async: 15
-      poll: 5
-      register: scrout
-      ansible.builtin.shell: |
-        chsh -s /bin/zsh vagrant
-        zsh
-    - name: Checking the Job Status
-      async_status:
-        jid: "{{ scrout.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      retries: 10
-    - name: Print return information from the previous task
-      ansible.builtin.debug:
-        var: job_result
-    - name: Clone zsh-syntax-highlighting repository
-      become_user: vagrant
-      git:
-        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
-        dest: ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
-    - name: Clone zsh-autosuggestions repository
-      become_user: vagrant
-      git:
-        repo: https://github.com/zsh-users/zsh-autosuggestions
-        dest: ~/.oh-my-zsh/plugins/zsh-autosuggestions
-    - name: set zsh plugins
-      become_user: vagrant
-      ansible.builtin.lineinfile:
-        path: ~/.zshrc
-        regexp: '^plugins='
-        line: plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+      args:
+        executable: /bin/zsh
+    - debug: msg="{{ result.stdout }}"

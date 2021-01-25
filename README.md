@@ -149,3 +149,13 @@ ok: [10.1.7.111] => {
     }
 }
 ```
+# executable
+```yaml
+    - name: Run a command that uses non-posix shell-isms (in this example /bin/sh doesn't handle redirection and wildcards together but bash does)
+      become_user: vagrant
+      shell: 'echo ${{ env_variable }}'
+      register: result
+      args:
+        executable: /bin/zsh
+    - debug: msg="{{ result.stdout }}"
+```
