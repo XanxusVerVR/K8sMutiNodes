@@ -6,6 +6,8 @@
 
 `ansible-playbook my-environment.yaml`
 
+`ansible-playbook -v my-environment.yaml`
+
 # tag
 `ansible-playbook my-environment.yaml --tags "onlyrun"`
 ```yaml
@@ -83,4 +85,26 @@ www.*80/tcp
 1234
 1235
 8888
+```
+# async/poll
+## poll 0
+如果只是要開啟一個process放到背景執行，不需要檢查是否完成，poll設0即可
+```yaml
+    - name: install oh-my-zsh
+      become_user: vagrant
+      register: result
+      async: 15
+      poll: 0
+      ansible.builtin.shell: |
+        sh ~/install.sh
+```
+## 有設poll的檢查間隔秒數
+```yaml
+    - name: set oh-my-zsh
+      async: 15
+      poll: 5
+      register: scrout
+      ansible.builtin.shell: |
+        chsh -s /bin/zsh vagrant
+        zsh
 ```

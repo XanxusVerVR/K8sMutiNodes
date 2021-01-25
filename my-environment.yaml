@@ -2,20 +2,16 @@
   become: yes #作為root執行 放這會作用每個task
   tasks:
     - name: set sudoers nopassword
-      ansible.builtin.shell: |
-        sed -i '/^%admin ALL=(ALL) ALL.*/a vagrant ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
-    - name: Ensure we have our own comment added to /etc/services
-      become_user: vagrant
       ansible.builtin.lineinfile:
-        path: ~/lineinfile.txt
-        insertafter: '^1235$'
-        line: '8888'
-      tags:
-        - onlyrun1
+        create: yes
+        path: /etc/sudoers.d/myOverrides
+        state: present
+        line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
     - name: set sudoers default editor
-      ansible.builtin.shell:
-        cmd: sed -i '1i Defaults  editor=/usr/bin/vim' /etc/sudoers
-        chdir: /etc #切到/etc執行這指令
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        state: present
+        line: 'Defaults  editor=/usr/bin/vim'
     - name: set timezone
       ansible.builtin.shell:
         cmd: timedatectl set-timezone Asia/Taipei
@@ -37,32 +33,38 @@
     - name: Install the package "jq"
       apt:
         name: jq
-
     - name: set git config
       ansible.builtin.shell: |
         git config --global user.name "Mr. Dai"
         git config --global user.email xanxus@example.com
         git config --global core.editor "vim"
-
-    # - name: set oh-my-zsh
-    #   tags:
-    #     - onlyrun
-    #   register: result
-    #   ansible.builtin.shell: |
-    #     wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
-
     - name: Download oh-my-zsh
       register: result
       become_user: vagrant
-      tags:
-        - onlyrun2
       get_url:
         url: https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
         dest: ~/
         mode: '0600'
-
+    - name: install oh-my-zsh
+      become_user: vagrant
+      register: result
+      async: 15
+      poll: 0
+      ansible.builtin.shell: |
+        sh ~/install.sh
+    - name: set oh-my-zsh
+      async: 15
+      poll: 5
+      register: scrout
+      ansible.builtin.shell: |
+        chsh -s /bin/zsh vagrant
+        zsh
+    - name: Checking the Job Status
+      async_status:
+        jid: "{{ scrout.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 10
     - name: Print return information from the previous task
-      tags:
-          - onlyrun2
       ansible.builtin.debug:
-        var: result
+        var: job_result
