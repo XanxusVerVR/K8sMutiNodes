@@ -108,3 +108,44 @@ www.*80/tcp
         chsh -s /bin/zsh vagrant
         zsh
 ```
+# debug module
+```yaml
+    - name: set oh-my-zsh
+      async: 15
+      poll: 5
+      register: scrout
+      ansible.builtin.shell: |
+        chsh -s /bin/zsh vagrant
+        zsh
+    - name: Checking the Job Status
+      async_status:
+        jid: "{{ scrout.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 10
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: job_result
+```
+`Print return information from the previous task` Task Output:
+```
+TASK [Print return information from the previous task] *********************************************
+ok: [10.1.7.111] => {
+    "job_result": {
+        "ansible_job_id": "179339402410.3598",
+        "attempts": 1,
+        "changed": true,
+        "cmd": "chsh -s /bin/zsh vagrant\nzsh\n",
+        "delta": "0:00:00.034260",
+        "end": "2021-01-25 17:35:02.939990",
+        "failed": false,
+        "finished": 1,
+        "rc": 0,
+        "start": "2021-01-25 17:35:02.905730",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "",
+        "stdout_lines": []
+    }
+}
+```
